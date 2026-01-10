@@ -1,0 +1,125 @@
+{
+    "module": "News",
+    "base_url": "/api/news",
+    "endpoints": [
+        {
+            "method": "POST",
+            "path": "/",
+            "summary": "Create News",
+            "access": "Admin Only",
+            "request": {
+                "headers": {
+                    "Authorization": "Bearer <token>"
+                },
+                "body": {
+                    "title": "New Journal Launched",
+                    "description": "We are happy to announce the launch of a new journal...",
+                    "news_date": "2025-01-15",
+                    "tags": [
+                        "Announcement",
+                        "New Launch",
+                        "Journals"
+                    ]
+                }
+            },
+            "response": {
+                "success": true,
+                "message": "News created successfully",
+                "data": {
+                    "id": 1,
+                    "title": "New Journal Launched",
+                    "description": "We are happy to announce the launch of a new journal...",
+                    "news_date": "2025-01-15",
+                    "tags": [
+                        "Announcement",
+                        "New Launch",
+                        "Journals"
+                    ],
+                    "updatedAt": "2025-01-01T10:00:00.000Z",
+                    "createdAt": "2025-01-01T10:00:00.000Z"
+                }
+            }
+        },
+        {
+            "method": "GET",
+            "path": "/",
+            "summary": "Get All News",
+            "access": "Public",
+            "response": {
+                "success": true,
+                "count": 2,
+                "data": [
+                    {
+                        "id": 1,
+                        "title": "New Journal Launched",
+                        "description": "...",
+                        "news_date": "2025-01-15",
+                        "tags": [
+                            "Announcement"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "method": "GET",
+            "path": "/:id",
+            "summary": "Get News by ID",
+            "access": "Public",
+            "response": {
+                "success": true,
+                "data": {
+                    "id": 1,
+                    "title": "New Journal Launched",
+                    "description": "...",
+                    "tags": [
+                        "Announcement"
+                    ]
+                }
+            }
+        },
+        {
+            "method": "PUT",
+            "path": "/:id",
+            "summary": "Update News",
+            "access": "Admin Only",
+            "request": {
+                "headers": {
+                    "Authorization": "Bearer <token>"
+                },
+                "body": {
+                    "title": "Updated Title",
+                    "tags": [
+                        "Updated Tag"
+                    ]
+                }
+            },
+            "response": {
+                "success": true,
+                "message": "News updated successfully",
+                "data": {
+                    "id": 1,
+                    "title": "Updated Title",
+                    "tags": [
+                        "Updated Tag"
+                    ]
+                }
+            }
+        },
+        {
+            "method": "DELETE",
+            "path": "/:id",
+            "summary": "Soft Delete News",
+            "access": "Admin Only",
+            "request": {
+                "headers": {
+                    "Authorization": "Bearer <token>"
+                }
+            },
+            "response": {
+                "success": true,
+                "message": "News deleted successfully"
+            }
+        }
+    ]
+}

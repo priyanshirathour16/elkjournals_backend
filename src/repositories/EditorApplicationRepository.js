@@ -29,7 +29,13 @@ class EditorApplicationRepository {
     }
 
     async findByEmail(email) {
-        return await EditorApplication.findOne({ where: { email } });
+        return await EditorApplication.findOne({ where: { email }, paranoid: false }); // Check even deleted ones if needed, but here we focus on active. Wait, standard check is fine.
+    }
+
+    async update(id, data) {
+        const application = await EditorApplication.findByPk(id);
+        if (!application) return null;
+        return await application.update(data);
     }
 
     async delete(id) {

@@ -34,11 +34,11 @@ if (process.env.NODE_ENV === 'production') {
 } else {
     //-------------------- local mysql ---------------------
     sequelize = new Sequelize(
-        process.env.DB_NAME || 'elkjournals',
-        process.env.DB_USER || 'root',
-        process.env.DB_PASS || 'root@123',
+        "rapidcollaborate_elkjournals",
+        'rapidcollaborate_priyanshi',
+        'g2kcu~3+cBpS$HLE',
         {
-            host: process.env.DB_HOST || '127.0.0.1',
+            host: "rapidcollaborate.in",
             dialect: 'mysql',
             logging: false,
         }

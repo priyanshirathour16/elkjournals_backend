@@ -71,8 +71,25 @@ const Manuscript = sequelize.define('Manuscript', {
     signature_file_path: { type: DataTypes.STRING, allowNull: true },
 
     status: {
+        type: DataTypes.ENUM,
+        values: [
+            'Pending',
+            'Accepted',
+            'Rejected',
+            'Awaiting Copyright',
+            'Assigned to Editor',
+            'Assigned to Reviewer',
+            'Awaiting Revised Manuscript'
+        ],
+        defaultValue: 'Pending'
+    },
+    comment: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+    status_updated_by: {
         type: DataTypes.STRING,
-        defaultValue: 'Submitted'
+        allowNull: true
     }
 }, {
     timestamps: true,

@@ -2,13 +2,10 @@ const express = require('express');
 const router = express.Router();
 const manuscriptController = require('../controllers/manuscriptController');
 const manuscriptUpload = require('../middleware/manuscriptUploadMiddleware');
+const authMiddleware = require('../middleware/authMiddleware');
+const roleMiddleware = require('../middleware/roleMiddleware');
 
-// Public route as per implied usage (anyone can submit?), or is it protected? 
-// The user CURL request didn't strictly show auth headers but usually submission is guarded. 
-// However, typically manuscript submission systems allow registration/submission in one go or public access. 
-// Assuming PUBLIC for now based on context, can add authMiddleware later if needed.
-
-// Manuscript submission route
+// Manuscript submission route (public - allows anyone to submit)
 router.post(
     '/submit',
     manuscriptUpload.fields([
@@ -18,8 +15,11 @@ router.post(
     manuscriptController.submitManuscript
 );
 
-router.get('/', manuscriptController.getAllManuscripts);
+// Get all manuscripts with optional status filter (admin only)
+router.get('/', authMiddleware, roleMiddleware, manuscriptController.getAllManuscripts);
+router.get('/new-manuscript/:id', manuscriptController.getNewManuscriptDetails); // New endpoint
 router.get('/author/:authorId', manuscriptController.getManuscriptsByAuthor);
 router.get('/:id', manuscriptController.getManuscriptById);
+router.patch('/:id/status', manuscriptController.updateManuscriptStatus);
 
 module.exports = router;

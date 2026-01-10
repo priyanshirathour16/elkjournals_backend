@@ -288,8 +288,99 @@ const welcomeAuthorTemplate = (data) => {
     `;
 };
 
+/**
+ * Email template for editor welcome (credentials)
+ */
+const editorWelcomeTemplate = (data) => {
+    const { name, email, password } = data;
+
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f9f9f9;
+            }
+            .header {
+                background-color: #8e44ad;
+                color: white;
+                padding: 20px;
+                text-align: center;
+            }
+            .content {
+                background-color: white;
+                padding: 30px;
+                margin-top: 20px;
+                border-radius: 5px;
+            }
+            .credentials {
+                background-color: #ecf0f1;
+                padding: 15px;
+                margin: 20px 0;
+                border-radius: 5px;
+            }
+            .warning {
+                background-color: #fff3cd;
+                border-left: 4px solid #ffc107;
+                padding: 15px;
+                margin: 20px 0;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 20px;
+                color: #7f8c8d;
+                font-size: 12px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>ELK Journals Editor Application</h1>
+            </div>
+            <div class="content">
+                <h2>Application Received Successfully</h2>
+                <p>Dear ${name},</p>
+                <p>Thank you for applying to become an editor at ELK Journals. Your application has been received and is currently under review.</p>
+                
+                <p>We have created an account for you to track your application status. You can log in using the following credentials:</p>
+                
+                <div class="credentials">
+                    <p><strong>Login Details:</strong></p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Password:</strong> ${password}</p>
+                </div>
+
+                <div class="warning">
+                    <strong>⚠ Important:</strong> For your security, please consider changing your password after your first login.
+                </div>
+                
+                <p>We will notify you once your application has been processed.</p>
+                
+                <p>Best regards,<br>ELK Journals Editorial Team</p>
+            </div>
+            <div class="footer">
+                <p>This is an automated email. Please do not reply to this message.</p>
+                <p>For any queries, please contact us at info@elkjournals.com</p>
+            </div>
+        </div>
+    </body>
+    </html>
+    `;
+};
+
 module.exports = {
     otpTemplate,
     submissionAcknowledgmentTemplate,
-    welcomeAuthorTemplate
+    welcomeAuthorTemplate,
+    editorWelcomeTemplate
 };
