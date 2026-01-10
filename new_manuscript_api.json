@@ -1,0 +1,117 @@
+{
+    "api": "Get Full Manuscript Details",
+    "endpoint": "GET /api/manuscripts/new-manuscript/:id",
+    "description": "Fetch comprehensive manuscript details along with nested journal information (including all issues), author details, and publication status.",
+    "access": "Public / Protected (as configured)",
+    "request": {
+        "params": {
+            "id": "IJB-2025-001 (Public Manuscript ID)"
+        }
+    },
+    "response": {
+        "success_example": {
+            "message": "Manuscript details fetched successfully",
+            "data": {
+                "id": 12,
+                "manuscript_id": "IJB-2025-001",
+                "journal_id": 5,
+                "author_id": 3,
+                "paper_title": "Impact of AI on Healthcare",
+                "manuscript_type": "Research paper",
+                "word_count": 3500,
+                "no_of_words_text": "Three thousand five hundred words only",
+                "page_count": 12,
+                "table_count": 3,
+                "figure_count": 2,
+                "reviewer_first_name": "Jane",
+                "reviewer_last_name": "Doe",
+                "reviewer_email": "jane.doe@example.com",
+                "reviewer_phone": "+1234567890",
+                "reviewer_country": "USA",
+                "reviewer_institution": "MIT",
+                "reviewer_designation": "Professor",
+                "reviewer_specialisation": "AI in Medicine",
+                "reviewer_department": "Computer Science",
+                "reviewer_state": "Massachusetts",
+                "reviewer_city": "Cambridge",
+                "reviewer_address": "77 Massachusetts Ave",
+                "keywords": "AI, Healthcare, Machine Learning, Diagnostics",
+                "abstract": "This study explores the transformative potential of Artificial Intelligence...",
+                "manuscript_file_path": "/uploads/manuscripts/IJB-2025-001_file.pdf",
+                "cover_letter_path": "/uploads/cover_letters/IJB-2025-001_cover.pdf",
+                "signature_file_path": null,
+                "status": "Accepted",
+                "comment": "Approved for publication.",
+                "status_updated_by": "Admin User",
+                "createdAt": "2025-01-10T08:30:00.000Z",
+                "updatedAt": "2025-01-15T10:00:00.000Z",
+                "journal": {
+                    "id": 5,
+                    "title": "International Journal of Biology",
+                    "print_issn": "1234-5678",
+                    "e_issn": "8765-4321",
+                    "frequency": "Quarterly",
+                    "image": "/uploads/journals/ijb_logo.png",
+                    "issues": [
+                        {
+                            "id": 1,
+                            "volume": "1",
+                            "issue_no": "1",
+                            "year": 2024
+                        },
+                        {
+                            "id": 2,
+                            "volume": "1",
+                            "issue_no": "2",
+                            "year": 2024
+                        }
+                    ]
+                },
+                "author": {
+                    "firstName": "John",
+                    "lastName": "Smith",
+                    "email": "john.smith@university.edu",
+                    "contactNumber": "+919876543210",
+                    "country": "India",
+                    "state": "Maharashtra",
+                    "city": "Mumbai",
+                    "institution": "University of Mumbai"
+                },
+                "authors": [
+                    {
+                        "id": 5,
+                        "manuscript_id": 12,
+                        "first_name": "Alice",
+                        "last_name": "Brown",
+                        "email": "alice.b@research.org",
+                        "institution": "Research Academy",
+                        "is_corresponding_author": false
+                    }
+                ],
+                "checklist": {
+                    "id": 8,
+                    "manuscript_id": 12,
+                    "is_sole_submission": true,
+                    "is_not_published": true,
+                    "is_original_work": true,
+                    "has_declared_conflicts": false,
+                    "has_acknowledged_support": true,
+                    "has_acknowledged_funding": true,
+                    "follows_guidelines": true
+                },
+                "submitter_name": "John Smith",
+                "submitter_email": "john.smith@university.edu",
+                "submitter_phone": "+919876543210",
+                "is_published": true,
+                "publication_details": {
+                    "id": 45,
+                    "doi": "10.1000/ijb.v1i2.45",
+                    "pdf_path": "/uploads/publications/final_pub_45.pdf"
+                }
+            }
+        },
+        "error_example": {
+            "message": "Manuscript not found"
+        }
+    }
+}

@@ -43,8 +43,10 @@ exports.getManuscriptsByAuthor = async (req, res) => {
 
 exports.getAllManuscripts = async (req, res, next) => {
     try {
-        const manuscripts = await manuscriptService.getAllManuscripts();
+        const { status } = req.query;
+        const manuscripts = await manuscriptService.getAllManuscripts(status);
         res.status(200).json({
+            success: true,
             message: 'Manuscripts fetched successfully',
             data: manuscripts
         });
@@ -57,6 +59,51 @@ exports.getManuscriptById = async (req, res, next) => {
     try {
         const { id } = req.params;
         const manuscript = await manuscriptService.getManuscriptByPublicId(id);
+
+        if (!manuscript) {
+            return res.status(404).json({ message: 'Manuscript not found' });
+        }
+
+        res.status(200).json({
+            message: 'Manuscript details fetched successfully',
+            data: manuscript
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.updateManuscriptStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params; // Manuscript Public ID
+        const { status, comment, statusUpdatedBy } = req.body;
+
+        if (!status && !comment && !statusUpdatedBy) {
+            return res.status(400).json({ message: 'At least one field (status, comment, statusUpdatedBy) is required for update' });
+        }
+
+        const result = await manuscriptService.updateManuscriptStatus(id, {
+            status,
+            comment,
+            statusUpdatedBy
+        });
+
+        res.status(200).json({
+            message: 'Manuscript status updated successfully',
+            data: result
+        });
+    } catch (error) {
+        if (error.message === 'Manuscript not found') {
+            return res.status(404).json({ message: error.message });
+        }
+        next(error);
+    }
+};
+
+exports.getNewManuscriptDetails = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const manuscript = await manuscriptService.getNewManuscriptDetails(id);
 
         if (!manuscript) {
             return res.status(404).json({ message: 'Manuscript not found' });

@@ -15,6 +15,9 @@ const SubmissionChecklist = require('./SubmissionChecklist');
 const Publication = require('./Publication');
 const Conference = require('./Conference');
 const ConferenceTemplate = require('./ConferenceTemplate');
+const CopyrightTemplate = require('./CopyrightTemplate');
+const CopyrightSubmission = require('./CopyrightSubmission');
+const News = require('./News');
 
 // Associations
 Journal.hasMany(EditorialBoard, { foreignKey: 'journal_id', as: 'editorial_board' });
@@ -53,6 +56,10 @@ Publication.belongsTo(JournalIssue, { foreignKey: 'issue_id', as: 'issue' });
 Conference.hasOne(ConferenceTemplate, { foreignKey: 'conference_id', as: 'template', onDelete: 'CASCADE' });
 ConferenceTemplate.belongsTo(Conference, { foreignKey: 'conference_id', as: 'conference' });
 
+// Copyright Associations
+CopyrightTemplate.hasMany(CopyrightSubmission, { foreignKey: 'template_id', as: 'submissions' });
+CopyrightSubmission.belongsTo(CopyrightTemplate, { foreignKey: 'template_id', as: 'template' });
+
 const db = {
     sequelize,
     Admin,
@@ -71,7 +78,12 @@ const db = {
     SubmissionChecklist,
     Publication,
     Conference,
-    ConferenceTemplate
+    ConferenceTemplate,
+    CopyrightTemplate,
+    CopyrightTemplate,
+    CopyrightSubmission,
+    News
 };
 
 module.exports = db;
+

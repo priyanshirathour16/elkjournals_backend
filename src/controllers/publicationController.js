@@ -17,15 +17,19 @@ exports.createPublication = async (req, res) => {
             abstract_references
         } = req.body;
 
-        // Check if file is uploaded
-        if (!req.file) {
+        let pdf_path = '';
+
+        // Check if file is uploaded or path string is provided
+        if (req.file) {
+            pdf_path = req.file.filename;
+        } else if (req.body.pdf_file) {
+            pdf_path = req.body.pdf_file;
+        } else {
             return res.status(400).json({
                 success: false,
                 message: 'PDF file is required'
             });
         }
-
-        const pdf_path = req.file.filename;
 
         const publication = await Publication.create({
             journal_id,

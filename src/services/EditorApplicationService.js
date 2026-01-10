@@ -1,6 +1,8 @@
 const editorApplicationRepository = require('../repositories/EditorApplicationRepository');
 const authorRepository = require('../repositories/AuthorRepository');
 const bcrypt = require('bcryptjs');
+const emailService = require('../utils/emailService');
+const { editorWelcomeTemplate } = require('../utils/emailTemplates');
 
 class EditorApplicationService {
     async submitApplication(data) {
@@ -11,9 +13,6 @@ class EditorApplicationService {
 
         // Check if email already exists in EditorApplication
         const existingApplication = await editorApplicationRepository.findByEmail(data.email);
-        if (existingApplication) {
-            throw new Error('Application with this email already exists');
-        }
 
         // Check if email already exists in Author
         const existingAuthor = await authorRepository.findByEmail(data.email);
@@ -26,15 +25,56 @@ class EditorApplicationService {
         }
 
         // Hash password
+        const plainPassword = data.password;
         const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(data.password, salt);
+        const hashedPassword = await bcrypt.hash(plainPassword, salt);
 
         const applicationData = {
             ...data,
-            password: hashedPassword
+            password: hashedPassword,
+            status: 'pending' // Force status to pending for new or re-submission
         };
 
-        return await editorApplicationRepository.create(applicationData);
+        let resultApplication;
+        console.log(existingApplication);
+
+        if (existingApplication) {
+            // Check status or if deleted
+            if (existingApplication.status === 'rejected' || existingApplication.deletedAt) {
+                // Allow re-submission: Update the existing record
+                // We need to restore it if it was soft-deleted (though findByEmail uses paranoid:false now so we see it)
+                if (existingApplication.deletedAt) {
+                    await existingApplication.restore();
+                }
+
+                // Update fields
+                await editorApplicationRepository.update(existingApplication.id, applicationData);
+                resultApplication = await editorApplicationRepository.findById(existingApplication.id);
+            } else {
+                // Status is pending or approved - Block submission
+                throw new Error('Application with this email already exists');
+            }
+        } else {
+            // New application
+            resultApplication = await editorApplicationRepository.create(applicationData);
+        }
+
+        // Send welcome email with credentials
+        try {
+            await emailService.sendEmail({
+                to: resultApplication.email,
+                subject: 'Editor Application - Account Created',
+                html: editorWelcomeTemplate({
+                    name: `${resultApplication.firstName} ${resultApplication.lastName}`,
+                    email: resultApplication.email,
+                    password: plainPassword
+                })
+            });
+        } catch (emailError) {
+            console.error('Failed to send editor welcome email:', emailError);
+        }
+
+        return resultApplication;
     }
 
     async getAllApplications() {

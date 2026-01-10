@@ -9,14 +9,16 @@ class ManuscriptRepository {
         return await Manuscript.create(data, { transaction });
     }
 
-    async findAllBasic() {
+    async findAllBasic(status = null) {
+        const whereClause = status ? { status } : {};
         const manuscripts = await Manuscript.findAll({
-            attributes: ['id', 'manuscript_id', 'createdAt', 'status'], // Removed redundant fields
+            where: whereClause,
+            attributes: ['id', 'manuscript_id', 'createdAt', 'status'],
             include: [
                 {
                     model: Journal,
                     as: 'journal',
-                    attributes: ['title']
+                    attributes: ['id', 'title', 'print_issn', 'e_issn']
                 },
                 {
                     model: Author,
@@ -151,6 +153,74 @@ class ManuscriptRepository {
         const sequenceStr = sequence.toString().padStart(3, '0');
 
         return `${initials}-${year}-${sequenceStr}`;
+    }
+    async findDetailedByPublicId(manuscript_id) {
+        // This is for the distinct /new-manuscript/:id API
+        const JournalIssue = require('../models/JournalIssue');
+
+        const manuscript = await Manuscript.findOne({
+            where: { manuscript_id },
+            include: [
+                {
+                    model: Journal,
+                    as: 'journal',
+                    attributes: ['id', 'title', 'print_issn', 'e_issn', 'frequency', 'image'],
+                    include: [
+                        {
+                            model: JournalIssue,
+                            as: 'issues',
+                            attributes: ['id', 'volume', 'issue_no', 'year']
+                        }
+                    ]
+                },
+                {
+                    model: Author,
+                    as: 'author',
+                    attributes: ['firstName', 'lastName']
+                },
+                {
+                    model: ManuscriptAuthor,
+                    as: 'authors'
+                },
+                {
+                    model: SubmissionChecklist,
+                    as: 'checklist'
+                }
+            ]
+        });
+
+        if (!manuscript) return null;
+
+        const Publication = require('../models/Publication');
+        const publication = await Publication.findOne({
+            where: { manuscript_id: manuscript_id }
+        });
+
+        const plain = manuscript.get({ plain: true });
+
+        // Normalize response
+        return {
+            ...plain,
+            submitter_name: plain.author ? `${plain.author.firstName} ${plain.author.lastName}`.trim() : 'Unknown',
+            submitter_email: plain.author ? plain.author.email : 'Unknown',
+            submitter_phone: plain.author ? plain.author.contactNumber : null,
+
+            // Publication Info if exists
+            is_published: !!publication,
+            publication_details: publication ? {
+                id: publication.id,
+                doi: publication.doi,
+                pdf_path: publication.pdf_path
+            } : null
+        };
+    }
+
+    async update(manuscript_id, updateData, transaction = null) {
+        // Find by custom manuscript ID (string)
+        const options = { where: { manuscript_id } };
+        if (transaction) options.transaction = transaction;
+        const [updatedRows] = await Manuscript.update(updateData, options);
+        return updatedRows > 0;
     }
 }
 

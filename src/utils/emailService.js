@@ -1,17 +1,11 @@
-const nodemailer = require('nodemailer');
+const { SendMailClient } = require("zeptomail");
+
+const url = "https://api.zeptomail.in/v1.1/email";
+const token = "Zoho-enczapikey PHtE6r0LQuzsgm4np0BVt/O+QpWsZ9kv/u1ufQgUtt4RDaVQHU1cq9h6kjG+o00uUaFFHP/OyYM+57rJu+zXIz65PWlEDmqyqK3sx/VYSPOZsbq6x00YuVwdfk3YXIHmddRj0iHUuNzYNA==";
 
 class EmailService {
     constructor() {
-        this.transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: process.env.GMAIL_USER,
-                clientId: process.env.GMAIL_CLIENT_ID,
-                clientSecret: process.env.GMAIL_CLIENT_SECRET,
-                refreshToken: process.env.GMAIL_REFRESH_TOKEN
-            }
-        });
+        this.client = new SendMailClient({ url, token });
     }
 
     /**
@@ -25,18 +19,27 @@ class EmailService {
     async sendEmail({ to, subject, html, text }) {
         try {
             const mailOptions = {
-                from: `"ELK Journals" <${process.env.GMAIL_USER || 'info@elkjournals.com'}>`,
-                to,
-                subject,
-                html,
-                text: text || '' // Fallback to empty string if no text provided
+                "from": {
+                    "address": "noreply@irissecuritysolutions.in",
+                    "name": "noreply"
+                },
+                "to": [
+                    {
+                        "email_address": {
+                            "address": to,
+                            "name": "Recipient"
+                        }
+                    }
+                ],
+                "subject": subject,
+                "htmlbody": html,
             };
 
-            const info = await this.transporter.sendMail(mailOptions);
-            console.log('Email sent successfully:', info.messageId);
+            const info = await this.client.sendMail(mailOptions);
+            console.log('Email sent successfully');
             return {
                 success: true,
-                messageId: info.messageId
+                messageId: info?.data?.messageId // ZeptoMail response structure might vary, preserving safety
             };
         } catch (error) {
             console.error('Email sending failed:', error);
@@ -46,16 +49,13 @@ class EmailService {
 
     /**
      * Verify email configuration
+     * Deprecated for ZeptoMail as it uses API.
      */
     async verifyConnection() {
-        try {
-            await this.transporter.verify();
-            console.log('Email service is ready to send emails');
-            return true;
-        } catch (error) {
-            console.error('Email service verification failed:', error);
-            return false;
-        }
+        // ZeptoMail client is initialized synchronously with token/url.
+        // There isn't a direct "verify" method like SMTP.
+        console.log('Email service is using ZeptoMail API');
+        return true;
     }
 }
 

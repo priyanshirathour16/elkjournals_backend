@@ -119,7 +119,7 @@ class ManuscriptService {
                 manuscript_file_path: manuscriptFile.path,
                 cover_letter_path: coverLetterFile ? coverLetterFile.path : null,
 
-                status: 'Submitted'
+                status: 'Pending'
             };
 
             const manuscript = await manuscriptRepository.create(manuscriptData, t);
@@ -188,8 +188,8 @@ class ManuscriptService {
         };
     }
 
-    async getAllManuscripts() {
-        return await manuscriptRepository.findAllBasic();
+    async getAllManuscripts(status = null) {
+        return await manuscriptRepository.findAllBasic(status);
     }
 
     async getManuscriptByPublicId(id) {
@@ -198,6 +198,39 @@ class ManuscriptService {
 
     async getManuscriptsByAuthor(authorId) {
         return await manuscriptRepository.findByAuthorId(authorId);
+    }
+    async updateManuscriptStatus(manuscriptId, statusData) {
+        // Validate inputs
+        if (!manuscriptId) throw new Error('Manuscript ID is required');
+
+        // Check if manuscript exists
+        const manuscript = await manuscriptRepository.findByPublicId(manuscriptId);
+        if (!manuscript) {
+            throw new Error('Manuscript not found');
+        }
+
+        const updateData = {
+            status: statusData.status,
+            comment: statusData.comment,
+            status_updated_by: statusData.statusUpdatedBy
+        };
+
+        // Remove undefined fields
+        Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
+        const updated = await manuscriptRepository.update(manuscriptId, updateData);
+        if (!updated) {
+            throw new Error('Failed to update manuscript status');
+        }
+
+        return {
+            manuscriptId,
+            ...updateData
+        };
+    }
+
+    async getNewManuscriptDetails(manuscriptId) {
+        return await manuscriptRepository.findDetailedByPublicId(manuscriptId);
     }
 }
 
