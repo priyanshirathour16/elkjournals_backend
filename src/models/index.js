@@ -18,6 +18,7 @@ const ConferenceTemplate = require('./ConferenceTemplate');
 const CopyrightTemplate = require('./CopyrightTemplate');
 const CopyrightSubmission = require('./CopyrightSubmission');
 const News = require('./News');
+const ConferenceRegistration = require('./ConferenceRegistration')
 
 // Associations
 Journal.hasMany(EditorialBoard, { foreignKey: 'journal_id', as: 'editorial_board' });
@@ -83,7 +84,7 @@ const db = {
     CopyrightTemplate,
     CopyrightSubmission,
     News,
-    ConferenceRegistration: require('./ConferenceRegistration')
+    ConferenceRegistration
 };
 
 module.exports = db;
