@@ -1,0 +1,153 @@
+{
+    "name": "Conference Registration API",
+    "description": "API for managing conference registrations",
+    "baseUrl": "/api/conference-registrations",
+    "endpoints": [
+        {
+            "method": "POST",
+            "path": "/",
+            "description": "Create a new conference registration",
+            "requestBody": {
+                "title": "Mr",
+                "firstName": "John",
+                "lastName": "Doe",
+                "email": "john.doe@example.com",
+                "confirmEmail": "john.doe@example.com",
+                "mobile": "1234567890",
+                "designation": "Professor",
+                "department": "Computer Science",
+                "institution": "University of Tech",
+                "institutionAddress": "123 Tech Lane",
+                "state": "California",
+                "city": "San Francisco",
+                "pincode": "94105",
+                "presentingPaper": "Offline",
+                "residentialDelegate": "Not Applicable",
+                "terms": true,
+                "conferenceId": 1
+            },
+            "response": {
+                "message": "Registration successful",
+                "data": {
+                    "id": 1,
+                    "title": "Mr",
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "email": "john.doe@example.com",
+                    "mobile": "1234567890",
+                    "designation": "Professor",
+                    "department": "Computer Science",
+                    "institution": "University of Tech",
+                    "institutionAddress": "123 Tech Lane",
+                    "state": "California",
+                    "city": "San Francisco",
+                    "pincode": "94105",
+                    "presentingPaper": "Offline",
+                    "residentialDelegate": "Not Applicable",
+                    "terms": true,
+                    "conferenceId": 1,
+                    "updatedAt": "2023-10-27T10:00:00.000Z",
+                    "createdAt": "2023-10-27T10:00:00.000Z"
+                }
+            }
+        },
+        {
+            "method": "GET",
+            "path": "/",
+            "description": "Get all registrations",
+            "response": {
+                "data": [
+                    {
+                        "id": 1,
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "conference": {
+                            "name": "Tech Conf 2023"
+                        },
+                        "email": "john.doe@example.com",
+                        "confirmEmail": "john.doe@example.com",
+                        "mobile": "1234567890",
+                        "designation": "Professor",
+                        "department": "Computer Science",
+                        "institution": "University of Tech",
+                        "institutionAddress": "123 Tech Lane",
+                        "state": "California",
+                        "city": "San Francisco",
+                        "pincode": "94105",
+                        "presentingPaper": "Offline",
+                        "residentialDelegate": "Not Applicable",
+                        "terms": true
+                    }
+                ]
+            }
+        },
+        {
+            "method": "GET",
+            "path": "/:id",
+            "description": "Get registration by ID",
+            "response": {
+                "data": {
+                    "id": 1,
+                    "firstName": "John",
+                    "lastName": "Doe",
+                    "conference": {
+                        "name": "Tech Conf 2023"
+                    },
+                    "email": "john.doe@example.com",
+                    "confirmEmail": "john.doe@example.com",
+                    "mobile": "1234567890",
+                    "designation": "Professor",
+                    "department": "Computer Science",
+                    "institution": "University of Tech",
+                    "institutionAddress": "123 Tech Lane",
+                    "state": "California",
+                    "city": "San Francisco",
+                    "pincode": "94105",
+                    "presentingPaper": "Offline",
+                    "residentialDelegate": "Not Applicable",
+                    "terms": true
+                }
+            }
+        },
+        {
+            "method": "GET",
+            "path": "/conference/:conferenceId",
+            "description": "Get registrations for a specific conference",
+            "response": {
+                "data": [
+                    {
+                        "id": 1,
+                        "firstName": "John",
+                        "lastName": "Doe",
+                        "conference": {
+                            "name": "Tech Conf 2023"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "method": "PUT",
+            "path": "/:id",
+            "description": "Update a registration",
+            "requestBody": {
+                "designation": "Associate Professor"
+            },
+            "response": {
+                "message": "Registration updated successfully",
+                "data": {
+                    "id": 1,
+                    "designation": "Associate Professor"
+                }
+            }
+        },
+        {
+            "method": "DELETE",
+            "path": "/:id",
+            "description": "Soft delete a registration",
+            "response": {
+                "message": "Registration deleted successfully"
+            }
+        }
+    ]
+}

@@ -82,7 +82,8 @@ const db = {
     CopyrightTemplate,
     CopyrightTemplate,
     CopyrightSubmission,
-    News
+    News,
+    ConferenceRegistration: require('./ConferenceRegistration')
 };
 
 module.exports = db;
