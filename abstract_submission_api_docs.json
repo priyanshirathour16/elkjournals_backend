@@ -1,0 +1,110 @@
+{
+    "abstract_submission_api": {
+        "base_url": "/api/abstract-submissions",
+        "description": "API endpoints for managing abstract submissions for conferences",
+        "endpoints": [
+            {
+                "method": "POST",
+                "path": "/submit-abstract",
+                "description": "Submit a new abstract for a conference. Requires file upload.",
+                "headers": {
+                    "Content-Type": "multipart/form-data"
+                },
+                "request_body": {
+                    "conference_id": "2 (Integer) - Required",
+                    "author_id": "1 (Integer) - Required",
+                    "abstract": "FILE (PDF/Image) - Required"
+                },
+                "response": {
+                    "success": {
+                        "message": "Abstract submitted successfully.",
+                        "data": {
+                            "id": 1,
+                            "conference_id": 2,
+                            "author_id": 1,
+                            "abstract_file": "uploads/abstract-1706025600000.pdf",
+                            "status": "Pending",
+                            "updatedAt": "2024-01-23T16:00:00.000Z",
+                            "createdAt": "2024-01-23T16:00:00.000Z"
+                        }
+                    },
+                    "error_400": {
+                        "message": "Abstract file is required. / Conference ID is required. / Author ID is required."
+                    }
+                }
+            },
+            {
+                "method": "PUT",
+                "path": "/update-status/:id",
+                "description": "Update the status of an abstract submission (Admin).",
+                "request_body": {
+                    "status": "Approved (Enum: Pending, Approved, Rejected)"
+                },
+                "response": {
+                    "success": {
+                        "message": "Status updated successfully.",
+                        "data": {
+                            "id": 1,
+                            "conference_id": 2,
+                            "author_id": 1,
+                            "abstract_file": "uploads/abstract-1706025600000.pdf",
+                            "status": "Approved",
+                            "createdAt": "2024-01-23T16:00:00.000Z",
+                            "updatedAt": "2024-01-23T16:05:00.000Z"
+                        }
+                    },
+                    "error_400": {
+                        "message": "Invalid status. Must be Pending, Approved, or Rejected."
+                    },
+                    "error_404": {
+                        "message": "Submission not found."
+                    }
+                }
+            },
+            {
+                "method": "GET",
+                "path": "/author/:authorId",
+                "description": "Get all abstract submissions submitted by a specific author.",
+                "response": {
+                    "success": [
+                        {
+                            "id": 1,
+                            "conference_id": 2,
+                            "author_id": 1,
+                            "abstract_file": "uploads/abstract-1706025600000.pdf",
+                            "status": "Pending",
+                            "createdAt": "2024-01-23T16:00:00.000Z",
+                            "updatedAt": "2024-01-23T16:00:00.000Z",
+                            "conference": {
+                                "id": 2,
+                                "name": "International Conference on AI"
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "method": "GET",
+                "path": "/",
+                "description": "Get all abstract submissions with conference details.",
+                "response": {
+                    "success": [
+                        {
+                            "id": 1,
+                            "conference_id": 2,
+                            "author_id": 1,
+                            "abstract_file": "uploads/abstract-1706025600000.pdf",
+                            "status": "Pending",
+                            "createdAt": "2024-01-23T16:00:00.000Z",
+                            "updatedAt": "2024-01-23T16:00:00.000Z",
+                            "conference": {
+                                "id": 2,
+                                "name": "International Conference on AI"
+                            }
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

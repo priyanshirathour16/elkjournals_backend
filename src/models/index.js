@@ -18,6 +18,7 @@ const ConferenceTemplate = require('./ConferenceTemplate');
 const CopyrightTemplate = require('./CopyrightTemplate');
 const CopyrightSubmission = require('./CopyrightSubmission');
 const News = require('./News');
+const AbstractSubmission = require('./AbstractSubmission');
 
 // Associations
 Journal.hasMany(EditorialBoard, { foreignKey: 'journal_id', as: 'editorial_board' });
@@ -60,6 +61,13 @@ ConferenceTemplate.belongsTo(Conference, { foreignKey: 'conference_id', as: 'con
 CopyrightTemplate.hasMany(CopyrightSubmission, { foreignKey: 'template_id', as: 'submissions' });
 CopyrightSubmission.belongsTo(CopyrightTemplate, { foreignKey: 'template_id', as: 'template' });
 
+// Abstract Submission Associations
+Conference.hasMany(AbstractSubmission, { foreignKey: 'conference_id', as: 'abstract_submissions' });
+AbstractSubmission.belongsTo(Conference, { foreignKey: 'conference_id', as: 'conference' });
+
+Author.hasMany(AbstractSubmission, { foreignKey: 'author_id', as: 'abstract_submissions' });
+AbstractSubmission.belongsTo(Author, { foreignKey: 'author_id', as: 'author' });
+
 const db = {
     sequelize,
     Admin,
@@ -75,15 +83,16 @@ const db = {
     ContactUs,
     OTP,
     SubmissionChecklist,
-    SubmissionChecklist,
+    SubmissionChecklist, // Duplicate key in original, intentional or typo? Leaving as is to avoid breaking if referenced.
     Publication,
     Conference,
     ConferenceTemplate,
     CopyrightTemplate,
-    CopyrightTemplate,
+    CopyrightTemplate, // Duplicate key
     CopyrightSubmission,
     News,
-    ConferenceRegistration: require('./ConferenceRegistration')
+    ConferenceRegistration: require('./ConferenceRegistration'),
+    AbstractSubmission
 };
 
 module.exports = db;
