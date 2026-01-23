@@ -1,4 +1,8 @@
 const conferenceTemplateRepository = require('../repositories/ConferenceTemplateRepository');
+const editorApplicationRepository = require('../repositories/EditorApplicationRepository');
+const emailService = require('../utils/emailService');
+const { editorWelcomeTemplate } = require('../utils/emailTemplates');
+const bcrypt = require('bcryptjs');
 
 // Helper to process request data (Files + JSON parsing)
 const prepareTemplateData = (req) => {
@@ -70,7 +74,55 @@ exports.upsertTemplate = async (req, res) => {
         }
 
         const data = prepareTemplateData(req);
+
+        // Extract organizer_email for account creation logic, but remove from data persistence
+        const organizerEmail = data.organizer_email;
+        delete data.organizer_email;
+
         const template = await conferenceTemplateRepository.upsert(conference_id, data);
+
+        // --- Auto-Create Editor Account for Organizer ---
+        if (organizerEmail) {
+            try {
+                const existingApplication = await editorApplicationRepository.findByEmail(organizerEmail);
+
+                if (!existingApplication) {
+                    // Create new account
+                    const defaultPassword = "Welcome@123"; // You might want to generate this randomly
+                    const salt = await bcrypt.genSalt(10);
+                    const hashedPassword = await bcrypt.hash(defaultPassword, salt);
+
+                    const newEditor = await editorApplicationRepository.create({
+                        journal_id: 1, // Default journal ID
+                        title: "Not Mentioned",
+                        firstName: "Not Mentioned",
+                        lastName: "Not Mentioned",
+                        email: organizerEmail,
+                        password: hashedPassword,
+                        status: "approved", // Auto-approve
+                    });
+
+                    console.log(`Auto-created editor account for ${organizerEmail}`);
+
+                    // Send Welcome Email
+                    await emailService.sendEmail({
+                        to: organizerEmail,
+                        subject: 'Editor Account Created',
+                        html: editorWelcomeTemplate({
+                            name: "Organizer",
+                            email: organizerEmail,
+                            password: defaultPassword
+                        })
+                    });
+                } else {
+                    console.log(`Editor account already exists for ${organizerEmail}`);
+                }
+            } catch (err) {
+                console.error("Error creating organizer editor account:", err);
+                // Non-blocking error - we don't fail the template creation
+            }
+        }
+
         res.status(200).json({ success: template });
     } catch (error) {
         res.status(500).json({ error: { message: 'Error saving conference template', details: error.message } });
