@@ -1,4 +1,4 @@
-const { Journal, EditorialBoard, JournalCategory, sequelize } = require('../models');
+const { Journal, EditorialBoard, JournalCategory, EditorApplication, sequelize } = require('../models');
 
 class JournalRepository {
     async create(journalData, editorialBoardData) {
@@ -37,6 +37,11 @@ class JournalRepository {
                 {
                     model: JournalCategory,
                     as: 'category'
+                },
+                {
+                    model: EditorApplication,
+                    as: 'editorApplications',
+                    attributes: ['firstName', 'lastName']
                 }
             ],
             order: [['createdAt', 'DESC']],
