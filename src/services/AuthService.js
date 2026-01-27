@@ -68,7 +68,7 @@ class AuthService {
       throw new Error("Invalid credentials");
     }
 
-    // 2. Check Admin/Editor Table
+    // 2. Check Admin Table
     const admin = await adminRepository.findByEmail(email);
 
     if (admin) {
@@ -101,8 +101,44 @@ class AuthService {
       throw new Error("Invalid credentials");
     }
 
-    // 3. Not found in either
-    console.log("User not found in Author or Admin tables:", email);
+    // 3. Check EditorApplication Table
+    const editor = await editorApplicationRepository.findByEmail(email);
+
+    if (editor) {
+      const isMatch = await bcrypt.compare(password, editor.password);
+      if (isMatch) {
+        const token = jwt.sign(
+          {
+            id: editor.id,
+            email: editor.email,
+            role: "editor",
+            email_trigger: editor.email_trigger || false,
+          },
+          process.env.JWT_SECRET || "secret",
+          { expiresIn: "24h" },
+        );
+
+        return {
+          token,
+          role: "editor",
+          email_trigger: editor.email_trigger || false,
+          user: {
+            id: editor.id,
+            email: editor.email,
+            phone: editor.phone || null,
+            role: "editor",
+          },
+        };
+      }
+      console.log("Password mismatch for editor:", email);
+      throw new Error("Invalid credentials");
+    }
+
+    // 4. Not found in any table
+    console.log(
+      "User not found in Author, Admin, or EditorApplication tables:",
+      email,
+    );
     throw new Error("Invalid credentials");
   }
 
