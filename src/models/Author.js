@@ -1,79 +1,88 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const { DataTypes } = require("sequelize");
+const sequelize = require("../config/database");
 
-const Author = sequelize.define('Author', {
+const Author = sequelize.define(
+  "Author",
+  {
     firstName: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     lastName: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-        validate: {
-            isEmail: true
-        }
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+      },
     },
     password: {
-        type: DataTypes.STRING,
-        allowNull: false
+      type: DataTypes.STRING,
+      allowNull: false,
     },
     address: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     city: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     state: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     landMark: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     pincode: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     country: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     isd: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     contactNumber: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     altContactNumber: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     qualification: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     specialization: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     institute: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     jobTitle: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     organization: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     orgType: {
-        type: DataTypes.STRING
+      type: DataTypes.STRING,
     },
     role: {
-        type: DataTypes.STRING,
-        defaultValue: 'author'
-    }
-}, {
+      type: DataTypes.STRING,
+      defaultValue: "author",
+    },
+    email_trigger: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: false,
+    },
+  },
+  {
     timestamps: true,
-    tableName: 'authors'
-});
+    tableName: "authors",
+  },
+);
 
 module.exports = Author;

@@ -1,119 +1,141 @@
-const manuscriptService = require('../services/ManuscriptService');
+const manuscriptService = require("../services/ManuscriptService");
 
 exports.submitManuscript = async (req, res, next) => {
-    try {
-        // Files are processed by middleware
-        const files = req.files || {};
+  try {
+    // Files are processed by middleware
+    const files = req.files || {};
 
-        // Body contains fields
-        const data = req.body;
+    // Body contains fields
+    const data = req.body;
 
-        const result = await manuscriptService.submitManuscript(data, files);
+    // Get email_trigger from token if user is authenticated, otherwise default to true
+    const emailTrigger = req.user?.email_trigger ?? true;
 
-        res.status(201).json({
-            message: 'Manuscript submitted successfully',
-            data: result
-        });
-    } catch (error) {
-        if (error.message === 'Journal not found') {
-            return res.status(404).json({ error: error.message });
-        }
-        if (error.message === 'Author account not found. Please verify your email with OTP first.') {
-            return res.status(400).json({ error: error.message });
-        }
-        if (error.message === 'Manuscript file is required' || error.message === 'Invalid authors JSON format') {
-            return res.status(400).json({ error: error.message });
-        }
-        if (error.message && error.message.includes('Abstract exceeds maximum word limit')) {
-            return res.status(400).json({ error: error.message });
-        }
-        next(error);
+    const result = await manuscriptService.submitManuscript(
+      data,
+      files,
+      emailTrigger,
+    );
+
+    res.status(201).json({
+      message: "Manuscript submitted successfully",
+      data: result,
+    });
+  } catch (error) {
+    if (error.message === "Journal not found") {
+      return res.status(404).json({ error: error.message });
     }
+    if (
+      error.message ===
+      "Author account not found. Please verify your email with OTP first."
+    ) {
+      return res.status(400).json({ error: error.message });
+    }
+    if (
+      error.message === "Manuscript file is required" ||
+      error.message === "Invalid authors JSON format"
+    ) {
+      return res.status(400).json({ error: error.message });
+    }
+    if (
+      error.message &&
+      error.message.includes("Abstract exceeds maximum word limit")
+    ) {
+      return res.status(400).json({ error: error.message });
+    }
+    next(error);
+  }
 };
 
 exports.getManuscriptsByAuthor = async (req, res) => {
-    try {
-        const { authorId } = req.params;
-        const manuscripts = await manuscriptService.getManuscriptsByAuthor(authorId);
-        res.status(200).json(manuscripts);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  try {
+    const { authorId } = req.params;
+    const manuscripts =
+      await manuscriptService.getManuscriptsByAuthor(authorId);
+    res.status(200).json(manuscripts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 exports.getAllManuscripts = async (req, res, next) => {
-    try {
-        const { status } = req.query;
-        const manuscripts = await manuscriptService.getAllManuscripts(status);
-        res.status(200).json({
-            success: true,
-            message: 'Manuscripts fetched successfully',
-            data: manuscripts
-        });
-    } catch (error) {
-        next(error);
-    }
+  try {
+    const { status } = req.query;
+    const manuscripts = await manuscriptService.getAllManuscripts(status);
+    res.status(200).json({
+      success: true,
+      message: "Manuscripts fetched successfully",
+      data: manuscripts,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.getManuscriptById = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const manuscript = await manuscriptService.getManuscriptByPublicId(id);
+  try {
+    const { id } = req.params;
+    const manuscript = await manuscriptService.getManuscriptByPublicId(id);
 
-        if (!manuscript) {
-            return res.status(404).json({ message: 'Manuscript not found' });
-        }
-
-        res.status(200).json({
-            message: 'Manuscript details fetched successfully',
-            data: manuscript
-        });
-    } catch (error) {
-        next(error);
+    if (!manuscript) {
+      return res.status(404).json({ message: "Manuscript not found" });
     }
+
+    res.status(200).json({
+      message: "Manuscript details fetched successfully",
+      data: manuscript,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.updateManuscriptStatus = async (req, res, next) => {
-    try {
-        const { id } = req.params; // Manuscript Public ID
-        const { status, comment, statusUpdatedBy } = req.body;
+  try {
+    const { id } = req.params; // Manuscript Public ID
+    const { status, comment, statusUpdatedBy } = req.body;
 
-        if (!status && !comment && !statusUpdatedBy) {
-            return res.status(400).json({ message: 'At least one field (status, comment, statusUpdatedBy) is required for update' });
-        }
-
-        const result = await manuscriptService.updateManuscriptStatus(id, {
-            status,
-            comment,
-            statusUpdatedBy
+    if (!status && !comment && !statusUpdatedBy) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "At least one field (status, comment, statusUpdatedBy) is required for update",
         });
-
-        res.status(200).json({
-            message: 'Manuscript status updated successfully',
-            data: result
-        });
-    } catch (error) {
-        if (error.message === 'Manuscript not found') {
-            return res.status(404).json({ message: error.message });
-        }
-        next(error);
     }
+
+    const result = await manuscriptService.updateManuscriptStatus(id, {
+      status,
+      comment,
+      statusUpdatedBy,
+    });
+
+    res.status(200).json({
+      message: "Manuscript status updated successfully",
+      data: result,
+    });
+  } catch (error) {
+    if (error.message === "Manuscript not found") {
+      return res.status(404).json({ message: error.message });
+    }
+    next(error);
+  }
 };
 
 exports.getNewManuscriptDetails = async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const manuscript = await manuscriptService.getNewManuscriptDetails(id);
+  try {
+    const { id } = req.params;
+    const manuscript = await manuscriptService.getNewManuscriptDetails(id);
 
-        if (!manuscript) {
-            return res.status(404).json({ message: 'Manuscript not found' });
-        }
-
-        res.status(200).json({
-            message: 'Manuscript details fetched successfully',
-            data: manuscript
-        });
-    } catch (error) {
-        next(error);
+    if (!manuscript) {
+      return res.status(404).json({ message: "Manuscript not found" });
     }
+
+    res.status(200).json({
+      message: "Manuscript details fetched successfully",
+      data: manuscript,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
