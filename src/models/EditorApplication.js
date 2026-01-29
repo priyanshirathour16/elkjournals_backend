@@ -54,6 +54,12 @@ const EditorApplication = sequelize.define(
         isIn: [["pending", "approved", "rejected"]],
       },
     },
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+      allowNull: false,
+      comment: "Whether the editor is currently active or inactive",
+    },
     email_trigger: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,

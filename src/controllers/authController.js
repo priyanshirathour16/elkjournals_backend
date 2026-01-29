@@ -186,3 +186,25 @@ exports.updateEmailTrigger = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getProfile = async (req, res, next) => {
+  try {
+    const { id, role } = req.user;
+
+    if (!id || role !== "author") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const profile = await authService.getAuthorProfile(id);
+
+    res.status(200).json({
+      success: true,
+      profile,
+    });
+  } catch (error) {
+    if (error.message === "Author not found") {
+      return res.status(404).json({ message: error.message });
+    }
+    next(error);
+  }
+};

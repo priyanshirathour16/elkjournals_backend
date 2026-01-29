@@ -19,6 +19,12 @@ const CopyrightTemplate = require('./CopyrightTemplate');
 const CopyrightSubmission = require('./CopyrightSubmission');
 const News = require('./News');
 const AbstractSubmission = require('./AbstractSubmission');
+const AbstractAssignment = require('./AbstractAssignment');
+const AbstractReview = require('./AbstractReview');
+const AbstractStatusHistory = require('./AbstractStatusHistory');
+const FullPaperFile = require('./FullPaperFile');
+const EditorConference = require('./EditorConference');
+const ProposalRequest = require('./ProposalRequest');
 
 // Associations
 Journal.hasMany(EditorialBoard, { foreignKey: 'journal_id', as: 'editorial_board' });
@@ -68,6 +74,32 @@ AbstractSubmission.belongsTo(Conference, { foreignKey: 'conference_id', as: 'con
 Author.hasMany(AbstractSubmission, { foreignKey: 'author_id', as: 'abstract_submissions' });
 AbstractSubmission.belongsTo(Author, { foreignKey: 'author_id', as: 'author' });
 
+// Abstract Assignment Associations
+AbstractSubmission.hasMany(AbstractAssignment, { foreignKey: 'abstract_id', as: 'assignments' });
+AbstractAssignment.belongsTo(AbstractSubmission, { foreignKey: 'abstract_id', as: 'abstract' });
+AbstractAssignment.belongsTo(EditorApplication, { foreignKey: 'editor_id', as: 'editor' });
+AbstractAssignment.belongsTo(Admin, { foreignKey: 'assigned_by', as: 'assignedByAdmin' });
+
+// Abstract Review Associations
+AbstractSubmission.hasMany(AbstractReview, { foreignKey: 'abstract_id', as: 'reviews' });
+AbstractReview.belongsTo(AbstractSubmission, { foreignKey: 'abstract_id', as: 'abstract' });
+AbstractReview.belongsTo(AbstractAssignment, { foreignKey: 'assignment_id', as: 'assignment' });
+
+// Abstract Status History Associations
+AbstractSubmission.hasMany(AbstractStatusHistory, { foreignKey: 'abstract_id', as: 'statusHistory' });
+AbstractStatusHistory.belongsTo(AbstractSubmission, { foreignKey: 'abstract_id', as: 'abstract' });
+
+// Full Paper File Associations
+AbstractSubmission.hasMany(FullPaperFile, { foreignKey: 'abstract_id', as: 'full_paper_files' });
+FullPaperFile.belongsTo(AbstractSubmission, { foreignKey: 'abstract_id', as: 'abstract' });
+FullPaperFile.belongsTo(Author, { foreignKey: 'uploaded_by', as: 'uploader' });
+
+// Editor Conference Associations
+EditorConference.belongsTo(EditorApplication, { foreignKey: 'editor_id', as: 'editor' });
+EditorConference.belongsTo(Conference, { foreignKey: 'conference_id', as: 'conference' });
+EditorApplication.hasMany(EditorConference, { foreignKey: 'editor_id', as: 'editorConferences' });
+Conference.hasMany(EditorConference, { foreignKey: 'conference_id', as: 'editorConferences' });
+
 const db = {
     sequelize,
     Admin,
@@ -92,7 +124,13 @@ const db = {
     CopyrightSubmission,
     News,
     ConferenceRegistration: require('./ConferenceRegistration'),
-    AbstractSubmission
+    AbstractSubmission,
+    AbstractAssignment,
+    AbstractReview,
+    AbstractStatusHistory,
+    FullPaperFile,
+    EditorConference,
+    ProposalRequest
 };
 
 module.exports = db;

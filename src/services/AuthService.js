@@ -91,6 +91,8 @@ class AuthService {
           email_trigger: admin.email_trigger,
           user: {
             id: admin.id,
+            firstName: admin.firstName || null,
+            lastName: admin.lastName || null,
             email: admin.email,
             phone: null,
             role: admin.role,
@@ -124,6 +126,8 @@ class AuthService {
           email_trigger: editor.email_trigger || false,
           user: {
             id: editor.id,
+            firstName: editor.firstName || null,
+            lastName: editor.lastName || null,
             email: editor.email,
             phone: editor.phone || null,
             role: "editor",
@@ -417,6 +421,18 @@ class AuthService {
         email_trigger: user.email_trigger,
       },
     };
+  }
+
+  async getAuthorProfile(authorId) {
+    const author = await authorRepository.findById(authorId);
+    if (!author) {
+      throw new Error("Author not found");
+    }
+
+    const authorData = author.toJSON ? author.toJSON() : author;
+    delete authorData.password;
+
+    return authorData;
   }
 }
 

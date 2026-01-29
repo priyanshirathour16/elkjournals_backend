@@ -3,6 +3,7 @@ const Journal = require('../models/Journal');
 const Author = require('../models/Author');
 const ManuscriptAuthor = require('../models/ManuscriptAuthor');
 const SubmissionChecklist = require('../models/SubmissionChecklist');
+const { Op } = require('sequelize');
 
 class ManuscriptRepository {
     async create(data, transaction) {
@@ -10,7 +11,23 @@ class ManuscriptRepository {
     }
 
     async findAllBasic(status = null) {
-        const whereClause = status ? { status } : {};
+        let whereClause = {};
+
+        // Handle single status, array of statuses, or no status
+        if (status) {
+            if (Array.isArray(status)) {
+                // Multiple statuses - use Op.in
+                whereClause = { status: { [Op.in]: status } };
+            } else if (typeof status === 'string' && status.includes(',')) {
+                // Comma-separated statuses - split and use Op.in
+                const statusArray = status.split(',').map(s => s.trim());
+                whereClause = { status: { [Op.in]: statusArray } };
+            } else {
+                // Single status
+                whereClause = { status };
+            }
+        }
+
         const manuscripts = await Manuscript.findAll({
             where: whereClause,
             attributes: ['id', 'manuscript_id', 'createdAt', 'status'],

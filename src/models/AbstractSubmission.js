@@ -10,12 +10,36 @@ const AbstractSubmission = sequelize.define('AbstractSubmission', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
+    conference_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    title: {
+        type: DataTypes.STRING(500),
+        defaultValue: null,
+    },
     status: {
-        type: DataTypes.ENUM('Pending', 'Approved', 'Rejected'),
-        defaultValue: 'Pending',
-    }
+        type: DataTypes.ENUM(
+            'Submitted',
+            'Assigned to Editor',
+            'Reviewed by Editor',
+            'Assigned to Conference Editor',
+            'Reviewed by Conference Editor',
+            'Accepted',
+            'Rejected'
+        ),
+        defaultValue: 'Submitted',
+    },
+    current_editor_id: {
+        type: DataTypes.INTEGER,
+        defaultValue: null,
+    },
+    current_conference_editor_id: {
+        type: DataTypes.INTEGER,
+        defaultValue: null,
+    },
 }, {
-    paranoid: true, // Enable soft delete
+    paranoid: true,
 });
 
 module.exports = AbstractSubmission;

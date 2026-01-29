@@ -37,6 +37,7 @@ app.use('/api/conference-registrations', require('./routes/conferenceRegistratio
 app.use('/api/copyright', require('./routes/copyrightRoutes'));
 app.use('/api/news', require('./routes/newsRoutes'));
 app.use('/api/abstract-submissions', require('./routes/abstractSubmissionRoutes'));
+app.use('/api/proposal-requests', require('./routes/proposalRequestRoutes'));
 
 
 // Global Error Handler

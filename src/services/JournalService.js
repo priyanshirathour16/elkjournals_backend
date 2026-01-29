@@ -59,6 +59,11 @@ class JournalService {
       throw new Error("Journal not found in this category");
     }
 
+    // Debug: Log the areas_covered data
+    console.log("Raw journal.areas_covered:", journal.areas_covered);
+    console.log("Type of areas_covered:", typeof journal.areas_covered);
+    console.log("Is Array?:", Array.isArray(journal.areas_covered));
+
     const editorialBoard = {
       chiefEditor: null,
       members: [],
@@ -122,9 +127,32 @@ class JournalService {
         "Researchers and students",
         "Libraries",
       ],
-      areasCovered: journal.areas_covered || ["Marketing", "Management"],
+      areasCovered: this.processAreasCovered(journal.areas_covered),
       editorialBoard: editorialBoard,
     };
+  }
+
+  // Helper method to ensure areasCovered is always a proper array
+  processAreasCovered(areasData) {
+    // If it's already a valid array with items, return it
+    if (Array.isArray(areasData) && areasData.length > 0) {
+      return areasData;
+    }
+
+    // If it's a string, try to parse it
+    if (typeof areasData === 'string') {
+      try {
+        const parsed = JSON.parse(areasData);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse areas_covered:', e);
+      }
+    }
+
+    // Return default values if data is invalid or empty
+    return ["Marketing", "Management"];
   }
 }
 

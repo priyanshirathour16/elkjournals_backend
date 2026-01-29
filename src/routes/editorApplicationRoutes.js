@@ -31,8 +31,21 @@ router.post(
     editorApplicationController.submitApplication
 );
 
+// API 2: GET available editors (Admin)
+router.get('/editors', authMiddleware, roleMiddleware, editorApplicationController.getEditors);
+
 // Admin only routes
 router.get('/', authMiddleware, roleMiddleware, editorApplicationController.getAllApplications);
+
+// Get editor applications by journal ID
+router.get('/journal/:journalId', authMiddleware, roleMiddleware, editorApplicationController.getApplicationsByJournalId);
+
+// Update editor application status (approve/reject)
+router.patch('/:id/status', authMiddleware, roleMiddleware, editorApplicationController.updateApplicationStatus);
+
+// Toggle editor active/inactive status
+router.patch('/:id/active', authMiddleware, roleMiddleware, editorApplicationController.toggleActiveStatus);
+
 router.get('/:id', authMiddleware, roleMiddleware, editorApplicationController.getApplicationById);
 router.delete('/:id', authMiddleware, roleMiddleware, editorApplicationController.deleteApplication);
 

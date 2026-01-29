@@ -1,5 +1,7 @@
 const { validationResult } = require('express-validator');
 const editorApplicationService = require('../services/EditorApplicationService');
+const { EditorApplication } = require('../models');
+const { decrypt } = require('../utils/encryption');
 
 exports.submitApplication = async (req, res, next) => {
     try {
@@ -79,6 +81,99 @@ exports.deleteApplication = async (req, res, next) => {
         if (error.message === 'Application not found') {
             return res.status(404).json({ message: error.message });
         }
+        next(error);
+    }
+};
+
+// API 2: Get available editors (Admin)
+exports.getEditors = async (req, res, next) => {
+    try {
+        const editors = await EditorApplication.findAll({
+            where: { status: 'approved' },
+            attributes: ['id', 'firstName', 'lastName', 'email', 'specialization'],
+        });
+
+        const data = editors.map(e => ({
+            id: e.id,
+            name: `${e.firstName} ${e.lastName}`,
+            email: e.email,
+            specialization: e.specialization,
+        }));
+
+        res.json({ success: true, data, message: 'Editors fetched successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// API: Get editor applications by journal ID
+exports.getApplicationsByJournalId = async (req, res, next) => {
+    try {
+        // Decrypt the journalId as it comes encrypted from frontend
+        const decryptedJournalId = decrypt(req.params.journalId);
+        const applications = await EditorApplication.findAll({
+            where: { journal_id: decryptedJournalId },
+            order: [['updatedAt', 'DESC']],
+        });
+        res.json(applications);
+    } catch (error) {
+        if (error.message === 'Invalid encrypted ID') {
+            return res.status(400).json({ message: 'Invalid journal ID' });
+        }
+        next(error);
+    }
+};
+
+// API: Update editor application status (approve/reject)
+exports.updateApplicationStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+
+        if (!['pending', 'approved', 'rejected'].includes(status)) {
+            return res.status(400).json({ message: 'Invalid status. Must be pending, approved, or rejected' });
+        }
+
+        const application = await EditorApplication.findByPk(id);
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        await application.update({ status });
+
+        res.json({
+            success: true,
+            message: `Editor application ${status} successfully`,
+            application: application.toJSON()
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// API: Toggle editor active/inactive status
+exports.toggleActiveStatus = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { is_active } = req.body;
+
+        if (typeof is_active !== 'boolean') {
+            return res.status(400).json({ message: 'is_active must be a boolean value' });
+        }
+
+        const application = await EditorApplication.findByPk(id);
+        if (!application) {
+            return res.status(404).json({ message: 'Application not found' });
+        }
+
+        await application.update({ is_active });
+
+        res.json({
+            success: true,
+            message: `Editor ${is_active ? 'activated' : 'deactivated'} successfully`,
+            application: application.toJSON()
+        });
+    } catch (error) {
         next(error);
     }
 };

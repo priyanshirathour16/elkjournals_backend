@@ -2,6 +2,14 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/database");
 
 const Admin = sequelize.define("Admin", {
+  firstName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  lastName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   email: {
     type: DataTypes.STRING,
     allowNull: false,

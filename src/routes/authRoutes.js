@@ -134,4 +134,7 @@ router.post(
   authController.updateEmailTrigger,
 );
 
+// Get logged-in author's profile
+router.get("/profile", authMiddleware, authController.getProfile);
+
 module.exports = router;
